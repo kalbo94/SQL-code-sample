@@ -1,0 +1,87 @@
+select *
+from "Telecom_customer_churn" tcc; 
+
+
+--How many customers joined the company during the last quarter?
+select 
+count("Customer ID" )
+from "Telecom_customer_churn" tcc 
+where "Tenure in Months" <=3;
+
+
+--Group Customer Status to find a pattern 
+select 
+	"Customer Status"
+	,Count ("Customer Status") as "Total"
+	,SUM (case when "Gender" = 'Female' then 1 else 0 end) as "Female"
+	,SUM (case when "Gender" = 'Male' then 1 else 0 end) as "Male"
+	,AVG ("Age") as "Average Age"
+	,SUM (case when "Married" = 'Yes' then 1 else 0 end) as "Married"
+	,SUM (case when "Married" = 'No' then 1 else 0 end) as "Not Married"	
+	,Avg ("Number of Dependents")	as "Average Dependents"
+	,Avg ("Tenure in Months") as "Average Tenure in Months"	
+	,Sum (case when "Phone Service" = 'Yes' then 1 else 0 end) as "Phone Service"	
+	,Avg ("Avg Monthly Long Distance Charges") as "Average Long Dist Charge"
+	,Sum (case when "Multiple Lines" =  'Yes' then 1 else 0 end) as "Multiple Lines"
+	,Sum (case when "Internet Service" = 'Yes' then 1 else 0 end) as "Internet Service"	
+	,Sum (case when "Internet Type" = 'Cable' then 1 else 0 end) as "Cable"	
+	,Sum (case when "Internet Type" = 'Fiber Optic' then 1 else 0 end) as "Fiber Optic"	
+	,Sum (case when "Internet Type" = 'DSL' then 1 else 0 end) as "DSL"
+	,Avg ("Avg Monthly GB Download") as "Avg Monthly GB Download"
+	,Sum (case when "Online Security" = 'Yes' then 1 else 0 end) as "Online Security"
+	,Sum (case when "Online Backup" = 'Yes' then 1 else 0 end) as "Online Backup"
+	,Sum (case when "Device Protection Plan" = 'Yes' then 1 else 0 end) as "Device Protection"
+	,Sum (case when "Premium Tech Support" = 'Yes' then 1 else 0 end) as "Premium Tech Support"
+	,Sum (case when "Streaming TV" = 'Yes' then 1 else 0 end) as "Streaming TV"
+	,Sum (case when "Streaming Movies" = 'Yes' then 1 else 0 end) as "Streaming Movies"
+	,Sum (case when "Streaming Music" = 'Yes' then 1 else 0 end) as "Straming Music"
+	,Sum (case when "Unlimited Data" = 'Yes' then 1 else 0 end) as "Unlimited Data"
+	,Sum (case when "Contract" = 'Month-to-Month' then 1 else 0 end) as "Month to Month Contract"
+	,Sum (case when "Contract" = 'One Year' then 1 else 0 end) as "One Year Contract"
+	,Sum (case when "Contract" = 'Two Year' then 1 else 0 end) as "Two Year Contract"
+	,Sum (case when "Paperless Billing" = 'Yes' then 1 else 0 end) as "Paperless Billing"
+	,Sum (case when "Payment Method" = 'Mailed Check' then 1 else 0 end) as "Mailed Payment"
+	,Sum (case when "Payment Method" = 'Bank Withdrawl' then 1 else 0 end) as "Bank Withdrawl Payment"
+	,Sum (case when "Payment Method" = 'Credit Card' then 1 else 0 end) as "Credit Card Payment"
+	,Avg ("Monthly Charge") as "Avg Monthly Charge"
+	,Avg ("Total Charges") as "Avg Total Charges"
+	,Avg ("Total Extra Data Charges") as "Avg Extra Data Charges"
+	,Avg ("Total Long Distance Charges") as "Avg Long Distance Charges"
+	,Avg ("Total Revenue") as "Avg Total Revenue"	
+from "Telecom_customer_churn" tcc
+group by "Customer Status";
+
+
+--Key drivers of customer churn
+select
+	"Churn Category"
+	,Count ("Churn Category")
+from "Telecom_customer_churn" tcc
+where "Churn Category" <> ''
+group by "Churn Category";
+
+--Is the company losing high value customers?
+Select 
+	"Customer Status"
+	,Sum (case when "Total Revenue" <100 then 1 else 0 end) as "Low Revenue Customer"
+	,Sum (case when "Total Revenue" >=100 and "Total Revenue" <1000 then 1 else 0 end) as "Mid Revenue Costumer"
+	,Sum (case when "Total Revenue" >1000 then 1 else 0 end) as "High Revenue Customer"
+from "Telecom_customer_churn" tcc 
+where "Customer Status" = 'Churned'
+group by "Customer Status";
+
+--Why are high value customers leaving?
+select 
+	"Churn Category"
+	,Count ("Churn Category")
+from "Telecom_customer_churn" tcc 
+where "Total Revenue" >1000
+and "Churn Category" <> ''
+group by "Churn Category";
+
+select 	
+	"Churn Reason"
+	,Count ("Churn Reason")
+from "Telecom_customer_churn" tcc 
+where "Churn Category" = 'Competitor'
+group by "Churn Reason";
